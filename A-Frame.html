@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Avoid text to be garbled -->
+  <meta charset="utf-8" />
+  <!-- Allow video to be playable on IOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge" /> -->
+  <!-- <meta name="viewport" content="width=device-width, initial-scale=1" /> -->
+
+  <title>A-Frame Playtest</title>
+
+  <!-- Included Scripts -->
+  <!-- A Frame Main API -->
+  <script src="https://aframe.io/releases/1.1.0/aframe.min.js"></script>
+  <!-- A Frame Extras API -->
+  <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
+  <!-- A Frame Environment API -->
+  <script src="https://unpkg.com/aframe-environment-component/dist/aframe-environment-component.min.js"></script>
+  <!-- Howler Audio API -->
+  <script src="./howler.js"></script>
+  <!-- A Frame Input API -->
+  <!-- <script src="https://rawgit.com/rdub80/aframe-gui/master/dist/aframe-gui.min.js"></script> -->
+</head>
+
+<script>
+  /// Variables
+  var isVideoLoaded = false;
+  var isSoundLoaded = false;
+  var firstTouch = true;
+
+  /// References
+  var aSound = null;
+  var audio = null;
+  var video = null;
+  var text = null;
+
+  AFRAME.registerComponent('loadassets', {
+    init() {
+      loadText();
+      loadInput();
+    },
+
+    tick() {
+
+    },
+  });
+
+  function loadInput(){
+    window.addEventListener('touchstart', function(){
+      if(firstTouch){
+        loadSound();
+      }
+    });
+  }
+
+  function loadText(){
+    text = document.querySelector('[text]');
+    text.setAttribute('text', {value: 'Touch anywhere to load and play sound'});
+  }
+
+  function loadSound() {
+    //#region THIS IS WHEN USING HOWLER AUDIO FRAMEWORK, NO 3D SURROUND SOUND
+    firstTouch = false;
+    var sound = new Howl({
+      src: ['./Assets/music.mp3']
+    });
+    text.setAttribute('text', {value: 'Sound loading...'});
+
+
+    Howler.volume(0.2);
+    sound.on("load", function () {
+      isSoundLoaded = true;
+      console.log("sound loaded: " + isSoundLoaded);
+      sound.play();
+      text.setAttribute('text', {value: 'Sound loaded and playing'});
+    });
+
+    sound.on("loaderror", function () {
+      console.log("sound loaded: " + isSoundLoaded);
+      text.setAttribute('text', {value: 'Sound load error'});
+    })
+    //#endregion
+
+    // firstTouch = false;
+    // audio = document.querySelector('audio');
+    // aSound = document.querySelector('[sound]');
+    // audio.load();
+    // text.setAttribute('text', {value: 'Sound loading...'});
+
+    // var interval = setInterval(() => {
+    //   if (audio.readyState >= 4) { /// finish loading the audio
+    //     clearInterval(interval);
+    //     isSoundLoaded = true;
+    //     console.log("sound loaded: " + isSoundLoaded);
+    //     text.setAttribute('text', {value: 'Sound loaded and playing'});
+    //     aSound.components.sound.stopSound();
+    //     aSound.components.sound.playSound();
+    //   }
+    // }, 500);
+
+    // aSound.addEventListener('sound-loaded', function (event) {
+    //   isSoundLoaded = true;
+    //   console.log("sound loaded: " + isSoundLoaded);
+    //   text.setAttribute('text', {value: 'Sound loaded and playing'});
+    //   aSound.components.sound.stopSound();
+    //   aSound.components.sound.playSound();
+    // });
+  }
+  
+  function loadVideo() {
+    firstTouch = false;
+    video = document.querySelector('video');
+    video.load();
+    text.setAttribute('text', {value: 'Video loading...'});
+    var interval = setInterval(() => {
+      if (video.readyState >= 4) { /// finish loading the video
+        clearInterval(interval);
+        isVideoLoaded = true;
+        console.log("video loaded: " + isVideoLoaded);
+        text.setAttribute('text', {value: 'Video loaded and playing'});
+        playVideo();
+      }
+    }, 500);
+  }
+
+  function playVideo(){
+    if(isVideoLoaded){
+      //text.setAttribute('text', {opacity: 0});
+      //sound.components.sound.stopSound();
+      //sound.components.sound.playSound();
+      if(video.muted){
+        video.muted = !video.muted;
+      }
+      video.play();
+      console.log("Play now");
+    }
+  }
+</script>
+
+<body>
+  <a-scene>
+    <a-assets>
+      <video id="video" muted loop src="Assets/video.mp4" webkit-playsinline playsinline></video>
+      <!-- <img id="image1" src="picture1.jpg"></img>
+        <img id="image2" src="giphy.gif"></img>
+        <video id="vimeo1" src="https://player.vimeo.com/video/488022372"></video> -->
+      <a-asset-item id="model1" src="Assets/Boy_GLTF.glb"></a-asset-item>
+      <!-- <a-asset-item id="model2" src="Assets/Boy_FBX.fbx"></a-asset-item> -->
+      <!-- <audio id="sound1" src="Assets/music.ogg" preload="auto"></audio> -->
+    </a-assets>
+
+    <!-- Text -->
+    <a-entity text="value: testing123; align: center" position="0 1 -1" scale="2 2 2"></a-entity>
+
+    <!-- Primitive -->
+    <a-box position="-2 0 -2" color="tomato" depth="2" height="4" width="0.5"></a-box>
+
+    <!-- Video (can only run on a hosted server or local hosted server) -->
+    <a-video src="#video" width="16" height="9" position="0 6 -10"></a-video>
+
+    <!-- Environment -->
+    <a-entity environment="preset: forest; dressingAmount: 500"></a-entity>
+
+    <!-- Model -->
+    <a-entity gltf-model="#model1" animation-mixer position="0 0 -2" scale="1 1 1"></a-entity>
+    <!-- <a-entity gltf-model="#model1" animation-mixer position="0 0 -2" scale="1 1 1" sound="src: #sound1; autoplay: false; volume: 0.2"></a-entity> -->
+    <!-- <a-entity fbx-model="url(Assets/Boy_FBX.fbx)" animation-mixer position="1 0 -2" scale="1 1 1"></a-entity> FBX FORMAT NOT WORKING-->
+
+    <!-- Sound -->
+    <!-- <a-entity position="0 0 0" sound="src: #sound1; autoplay: false; volume: 0.2"></a-entity> -->
+
+    <!-- UI -->
+
+    <a-entity loadassets></a-entity>
+  </a-scene>
+</body>
+
+</html>

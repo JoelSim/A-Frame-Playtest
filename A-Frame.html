@@ -24,6 +24,8 @@
   <!-- <script src="./Scripts/anime.js"></script> -->
   <!-- <script src="https://unpkg.com/aframe-animation-component@5.1.2/dist/aframe-animation-component.min.js"></script> -->
   <script src="https://unpkg.com/aframe-animation-timeline-component@2.0.0/dist/aframe-animation-timeline-component.min.js"></script>
+  <!-- Socket API -->
+  <script src="./Scripts/socket.io.js"></script>
   <!-- Scripts -->
   <script>
     /// Variables
@@ -40,9 +42,13 @@
     var text = null;
     var scene = null
 
+    /// Socket
+    var socket = null;
+    var socketURL = "http://localhost:9000";
+
     AFRAME.registerComponent('loadassets', {
       init() {
-        loadButton();
+        connectSocket();
       },
 
       tick() {
@@ -74,7 +80,7 @@
 
       scene.addEventListener('animationtimelinecomplete', function (evt) {
         console.log("finished: " + evt.detail.name);
-        scene.setAttribute('animation-timeline__camera', {timeline: '#cameraTimeline2'});
+        scene.setAttribute('animation-timeline__camera', { timeline: '#cameraTimeline2' });
       });
     }
 
@@ -168,6 +174,30 @@
         console.log("Play now");
       }
     }
+
+    function connectSocket() {
+      if (socket == null) {
+        socket = io.connect(socketURL);
+      }
+
+      socket.on('connect', function () {
+        console.log("Socket connected.");
+        console.log(socket);
+      });
+
+      socket.on('reconnecting', function () {
+        console.log("Socket reconnecting...");
+      });
+
+      socket.on('reconnect', function () {
+        console.log("Socket reconnected.");
+      });
+
+      socket.on('disconnect', function () {
+        console.log("Socket disconnected.");
+      });
+    }
+
   </script>
 </head>
 
@@ -175,14 +205,14 @@
   <a-scene cursor="rayOrigin: mouse; fuse: false" raycaster="objects: .raycastable"
     animation-timeline__camera="timeline: #cameraTimeline; startEvents: playAnim">
     <a-assets>
-      <video id="video" muted loop src="Assets/video.mp4" webkit-playsinline playsinline></video>
-      <img id="image1" src="Assets/picture1.jpg"></img>
+      <!-- <video id="video" muted loop src="Assets/video.mp4" webkit-playsinline playsinline></video> -->
+      <!-- <img id="image1" src="Assets/picture1.jpg"></img> -->
       <!--   <img id="image2" src="giphy.gif"></img>
         <video id="vimeo1" src="https://player.vimeo.com/video/488022372"></video> -->
-      <a-asset-item id="model1" src="Assets/Boy_GLTF.glb"></a-asset-item>
+      <!-- <a-asset-item id="model1" src="Assets/Boy_GLTF.glb"></a-asset-item> -->
       <!-- <a-asset-item id="model2" src="Assets/Boy_FBX.fbx"></a-asset-item> -->
       <!-- <audio id="sound1" src="Assets/music.ogg" preload="auto"></audio> -->
-      <a-timeline id='cameraTimeline'>
+      <!-- <a-timeline id='cameraTimeline'>
         <a-timeline-group>
           <a-timeline-animation select="#cam" name="rotation"></a-timeline-animation>
           <a-timeline-animation select="#cam" name="position"></a-timeline-animation>
@@ -191,7 +221,7 @@
       </a-timeline>
       <a-timeline id='cameraTimeline2'>
         <a-timeline-animation select="#cam" name="position3"></a-timeline-animation>
-      </a-timeline>
+      </a-timeline> -->
     </a-assets>
 
     <!-- Text -->
@@ -201,8 +231,8 @@
     <!-- <a-box position="-2 0 -2" color="tomato" depth="2" height="4" width="0.5"></a-box> -->
 
     <!-- Image-->
-    <a-image id="button1" src="#image1" width="1.6" height="0.9" position="0 2 -10" class="raycastable"></a-image>
-    <a-image id="button2" src="#image1" width="1.6" height="0.9" position="-3 2 -10" class="raycastable"></a-image>
+    <!-- <a-image id="button1" src="#image1" width="1.6" height="0.9" position="0 2 -10" class="raycastable"></a-image> -->
+    <!-- <a-image id="button2" src="#image1" width="1.6" height="0.9" position="-3 2 -10" class="raycastable"></a-image> -->
 
     <!-- Video (can only run on a hosted server or local hosted server) -->
     <!-- <a-video src="#video" width="1.6" height="0.9" position="0 6 -10"></a-video> -->
@@ -219,13 +249,13 @@
     <!-- <a-entity position="0 0 0" sound="src: #sound1; autoplay: false; volume: 0.2"></a-entity> -->
 
     <!-- Camera -->
-    <a-entity id="cam" position="0 0 0"
+    <!-- <a-entity id="cam" position="0 0 0"
       animation__position="property: position; from: 0 0 0; to: 5 0 0; dur: 2000; autoplay: false;"
       animation__rotation="property: rotation; from: 0 0 0; to: 0 90 0; dur: 4000; autoplay: false;"
       animation__position2="property: position; from: 5 0 0; to: 5 10 0; dur: 2000; autoplay: false;"
       animation__position3="property: position; from: 5 10 0; to: -5 10 0; dur: 2000; autoplay: false;">
       <a-camera></a-camera>
-    </a-entity>
+    </a-entity> -->
 
     <a-entity loadassets></a-entity>
   </a-scene>

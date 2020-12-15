@@ -20,14 +20,160 @@
   <script src="https://unpkg.com/aframe-environment-component/dist/aframe-environment-component.min.js"></script>
   <!-- Howler Audio API -->
   <script src="./Scripts/howler.js"></script>
-  <!-- Animation Component -->
-  <script src="./Scripts/anime.js"></script>
+  <!-- Animation API -->
+  <!-- <script src="./Scripts/anime.js"></script> -->
+  <!-- <script src="https://unpkg.com/aframe-animation-component@5.1.2/dist/aframe-animation-component.min.js"></script> -->
+  <script src="https://unpkg.com/aframe-animation-timeline-component@2.0.0/dist/aframe-animation-timeline-component.min.js"></script>
   <!-- Scripts -->
-  <script src="./main.js"></script>
+  <script>
+    /// Variables
+    var isVideoLoaded = false;
+    var isSoundLoaded = false;
+    var firstTouch = true;
+    var bigSize = false;
+    var bigSize2 = false;
+
+    /// References
+    var aSound = null;
+    var audio = null;
+    var video = null;
+    var text = null;
+    var scene = null
+
+    AFRAME.registerComponent('loadassets', {
+      init() {
+        loadButton();
+      },
+
+      tick() {
+
+      },
+    });
+
+    function loadButton() {
+      var button1 = document.querySelector('#button1');
+      var button2 = document.querySelector('#button2');
+      var camera = document.querySelector('#cam');
+      var cameraTimeline = document.querySelector('#cameraTimeline');
+      scene = document.querySelector('a-scene');
+
+      button1.addEventListener('click', function (evt) {
+        console.log('I was clicked at: ', evt.detail.intersection.point);
+        if (bigSize) {
+          button1.setAttribute('scale', { x: 1, y: 1, z: 1 });
+          bigSize = false;
+        } else {
+          button1.setAttribute('scale', { x: 2, y: 2, z: 2 });
+          bigSize = true;
+        }
+      });
+
+      button2.addEventListener('click', function (evt) {
+        scene.emit('playAnim');
+      });
+
+      scene.addEventListener('animationtimelinecomplete', function (evt) {
+        console.log("finished: " + evt.detail.name);
+        scene.setAttribute('animation-timeline__camera', {timeline: '#cameraTimeline2'});
+      });
+    }
+
+    function loadInput() {
+      window.addEventListener('touchstart', function () {
+        if (firstTouch) {
+          loadSound();
+        }
+      });
+    }
+
+    function loadText() {
+      text = document.querySelector('[text]');
+      text.setAttribute('text', { value: 'Touch anywhere to load and play sound' });
+    }
+
+    function loadSound() {
+      //#region THIS IS WHEN USING HOWLER AUDIO FRAMEWORK, NO 3D SURROUND SOUND
+      firstTouch = false;
+      var sound = new Howl({
+        src: ['./Assets/music.mp3']
+      });
+      text.setAttribute('text', { value: 'Sound loading...' });
+
+
+      Howler.volume(0.2);
+      sound.on("load", function () {
+        isSoundLoaded = true;
+        console.log("sound loaded: " + isSoundLoaded);
+        sound.play();
+        text.setAttribute('text', { value: 'Sound loaded and playing' });
+      });
+
+      sound.on("loaderror", function () {
+        console.log("sound loaded: " + isSoundLoaded);
+        text.setAttribute('text', { value: 'Sound load error' });
+      })
+      //#endregion
+
+      // firstTouch = false;
+      // audio = document.querySelector('audio');
+      // aSound = document.querySelector('[sound]');
+      // audio.load();
+      // text.setAttribute('text', {value: 'Sound loading...'});
+
+      // var interval = setInterval(() => {
+      //   if (audio.readyState >= 4) { /// finish loading the audio
+      //     clearInterval(interval);
+      //     isSoundLoaded = true;
+      //     console.log("sound loaded: " + isSoundLoaded);
+      //     text.setAttribute('text', {value: 'Sound loaded and playing'});
+      //     aSound.components.sound.stopSound();
+      //     aSound.components.sound.playSound();
+      //   }
+      // }, 500);
+
+      // aSound.addEventListener('sound-loaded', function (event) {
+      //   isSoundLoaded = true;
+      //   console.log("sound loaded: " + isSoundLoaded);
+      //   text.setAttribute('text', {value: 'Sound loaded and playing'});
+      //   aSound.components.sound.stopSound();
+      //   aSound.components.sound.playSound();
+      // });
+    }
+
+    function loadVideo() {
+      firstTouch = false;
+      video = document.querySelector('video');
+      video.load();
+      text.setAttribute('text', { value: 'Video loading...' });
+      var interval = setInterval(() => {
+        if (video.readyState >= 4) { /// finish loading the video
+          clearInterval(interval);
+          isVideoLoaded = true;
+          console.log("video loaded: " + isVideoLoaded);
+          text.setAttribute('text', { value: 'Video loaded and playing' });
+          playVideo();
+        }
+      }, 500);
+    }
+
+    function playVideo() {
+      if (isVideoLoaded) {
+        //text.setAttribute('text', {opacity: 0});
+        //sound.components.sound.stopSound();
+        //sound.components.sound.playSound();
+        if (video.muted) {
+          video.muted = !video.muted;
+        }
+        video.play();
+        console.log("Play now");
+      }
+    }
+  </script>
 </head>
 
 <body>
-  <a-scene cursor="rayOrigin: mouse; fuse: false" raycaster="objects: .raycastable">
+  <a-scene cursor="rayOrigin: mouse; fuse: false" raycaster="objects: .raycastable"
+    animation-timeline__camera="timeline: #cameraTimeline; startEvents: playAnim">
     <a-assets>
       <video id="video" muted loop src="Assets/video.mp4" webkit-playsinline playsinline></video>
       <img id="image1" src="Assets/picture1.jpg"></img>
@@ -36,6 +182,16 @@
       <a-asset-item id="model1" src="Assets/Boy_GLTF.glb"></a-asset-item>
       <!-- <a-asset-item id="model2" src="Assets/Boy_FBX.fbx"></a-asset-item> -->
       <!-- <audio id="sound1" src="Assets/music.ogg" preload="auto"></audio> -->
+      <a-timeline id='cameraTimeline'>
+        <a-timeline-group>
+          <a-timeline-animation select="#cam" name="rotation"></a-timeline-animation>
+          <a-timeline-animation select="#cam" name="position"></a-timeline-animation>
+        </a-timeline-group>
+        <a-timeline-animation select="#cam" name="position2"></a-timeline-animation>
+      </a-timeline>
+      <a-timeline id='cameraTimeline2'>
+        <a-timeline-animation select="#cam" name="position3"></a-timeline-animation>
+      </a-timeline>
     </a-assets>
 
     <!-- Text -->
@@ -63,7 +219,13 @@
     <!-- <a-entity position="0 0 0" sound="src: #sound1; autoplay: false; volume: 0.2"></a-entity> -->
 
     <!-- Camera -->
-    <a-camera id="cam" position="0 1.6 0" animation="property: position; to: 5 1.6 0; dur: 2000" animation__2="property: rotation; to: 0 90 0; dur: 2000"></a-camera>
+    <a-entity id="cam" position="0 0 0"
+      animation__position="property: position; from: 0 0 0; to: 5 0 0; dur: 2000; autoplay: false;"
+      animation__rotation="property: rotation; from: 0 0 0; to: 0 90 0; dur: 4000; autoplay: false;"
+      animation__position2="property: position; from: 5 0 0; to: 5 10 0; dur: 2000; autoplay: false;"
+      animation__position3="property: position; from: 5 10 0; to: -5 10 0; dur: 2000; autoplay: false;">
+      <a-camera></a-camera>
+    </a-entity>
 
     <a-entity loadassets></a-entity>
   </a-scene>

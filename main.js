@@ -1,3 +1,5 @@
+
+
 /// Variables
 var isVideoLoaded = false;
 var isSoundLoaded = false;
@@ -45,6 +47,15 @@ function loadButton() {
         //     targets: camera,
         //     duration: 2000,
         // });
+    });
+
+    //camera.object3D.position.set(5, 5, 0);
+    //camera.object3D.rotation.set(0, THREE.Math.degToRad(90), 0);
+    console.log(camera.object3D.position);
+
+
+    camera.addEventListener('animationcomplete', function(evt){
+        console.log(evt.detail.name);
     });
 }
 

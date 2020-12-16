@@ -23,9 +23,11 @@
   <!-- Animation API -->
   <!-- <script src="./Scripts/anime.js"></script> -->
   <!-- <script src="https://unpkg.com/aframe-animation-component@5.1.2/dist/aframe-animation-component.min.js"></script> -->
-  <script src="https://unpkg.com/aframe-animation-timeline-component@2.0.0/dist/aframe-animation-timeline-component.min.js"></script>
+  <script
+    src="https://unpkg.com/aframe-animation-timeline-component@2.0.0/dist/aframe-animation-timeline-component.min.js"></script>
   <!-- Socket API -->
   <script src="./Scripts/socket.io.js"></script>
+  <script src="./Scripts/socket.js"></script>
   <!-- Scripts -->
   <script>
     /// Variables
@@ -42,13 +44,10 @@
     var text = null;
     var scene = null
 
-    /// Socket
-    var socket = null;
-    var socketURL = "http://localhost:9000";
-
     AFRAME.registerComponent('loadassets', {
       init() {
         connectSocket();
+        loadButton();
       },
 
       tick() {
@@ -75,7 +74,7 @@
       });
 
       button2.addEventListener('click', function (evt) {
-        scene.emit('playAnim');
+        emitData();
       });
 
       scene.addEventListener('animationtimelinecomplete', function (evt) {
@@ -174,30 +173,6 @@
         console.log("Play now");
       }
     }
-
-    function connectSocket() {
-      if (socket == null) {
-        socket = io.connect(socketURL);
-      }
-
-      socket.on('connect', function () {
-        console.log("Socket connected.");
-        console.log(socket);
-      });
-
-      socket.on('reconnecting', function () {
-        console.log("Socket reconnecting...");
-      });
-
-      socket.on('reconnect', function () {
-        console.log("Socket reconnected.");
-      });
-
-      socket.on('disconnect', function () {
-        console.log("Socket disconnected.");
-      });
-    }
-
   </script>
 </head>
 
@@ -231,8 +206,8 @@
     <!-- <a-box position="-2 0 -2" color="tomato" depth="2" height="4" width="0.5"></a-box> -->
 
     <!-- Image-->
-    <!-- <a-image id="button1" src="#image1" width="1.6" height="0.9" position="0 2 -10" class="raycastable"></a-image> -->
-    <!-- <a-image id="button2" src="#image1" width="1.6" height="0.9" position="-3 2 -10" class="raycastable"></a-image> -->
+    <a-image id="button1" src="#image1" width="1.6" height="0.9" position="0 2 -10" class="raycastable"></a-image>
+    <a-image id="button2" src="#image1" width="1.6" height="0.9" position="-3 2 -10" class="raycastable"></a-image>
 
     <!-- Video (can only run on a hosted server or local hosted server) -->
     <!-- <a-video src="#video" width="1.6" height="0.9" position="0 6 -10"></a-video> -->

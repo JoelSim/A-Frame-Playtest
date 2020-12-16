@@ -46,7 +46,7 @@
 
     AFRAME.registerComponent('loadassets', {
       init() {
-        connectSocket();
+        //connectSocket();
         loadButton();
       },
 
@@ -54,6 +54,17 @@
 
       },
     });
+
+    function test(data) {
+      console.log(data);
+      if (bigSize) {
+        button1.setAttribute('scale', { x: 1, y: 1, z: 1 });
+        bigSize = false;
+      } else {
+        button1.setAttribute('scale', { x: 2, y: 2, z: 2 });
+        bigSize = true;
+      }
+    }
 
     function loadButton() {
       var button1 = document.querySelector('#button1');
@@ -74,7 +85,17 @@
       });
 
       button2.addEventListener('click', function (evt) {
-        emitData();
+        //emitData();
+        var data = {
+          hello: 123,
+          wtf: 321
+        }
+        parent.postMessage(data, "*");
+      });
+
+      window.addEventListener('message', function (e) {
+        console.log("html: ");
+        test(e.data);
       });
 
       scene.addEventListener('animationtimelinecomplete', function (evt) {

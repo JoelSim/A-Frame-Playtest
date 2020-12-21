@@ -205,7 +205,7 @@
       <!-- <img id="image1" src="Assets/picture1.jpg"></img> -->
       <!--   <img id="image2" src="giphy.gif"></img>
         <video id="vimeo1" src="https://player.vimeo.com/video/488022372"></video> -->
-      <!-- <a-asset-item id="model1" src="Assets/Boy_GLTF.glb"></a-asset-item> -->
+      <a-asset-item id="model1" src="Assets/Enf_v2.glb"></a-asset-item>
       <!-- <a-asset-item id="model2" src="Assets/Boy_FBX.fbx"></a-asset-item> -->
       <!-- <audio id="sound1" src="Assets/music.ogg" preload="auto"></audio> -->
       <!-- <a-timeline id='cameraTimeline'>
@@ -227,17 +227,17 @@
     <!-- <a-box position="-2 0 -2" color="tomato" depth="2" height="4" width="0.5"></a-box> -->
 
     <!-- Image-->
-    <a-image id="button1" src="#image1" width="1.6" height="0.9" position="0 2 -10" class="raycastable"></a-image>
-    <a-image id="button2" src="#image1" width="1.6" height="0.9" position="-3 2 -10" class="raycastable"></a-image>
+    <!-- <a-image id="button1" src="#image1" width="1.6" height="0.9" position="0 2 -10" class="raycastable"></a-image> -->
+    <!-- <a-image id="button2" src="#image1" width="1.6" height="0.9" position="-3 2 -10" class="raycastable"></a-image> -->
 
     <!-- Video (can only run on a hosted server or local hosted server) -->
     <!-- <a-video src="#video" width="1.6" height="0.9" position="0 6 -10"></a-video> -->
 
     <!-- Environment -->
-    <a-entity environment="preset: starry"></a-entity>
+    <!-- <a-entity environment="preset: starry"></a-entity> -->
 
     <!-- Model -->
-    <!-- <a-entity gltf-model="#model1" animation-mixer position="0 0 -2" scale="1 1 1"></a-entity> -->
+    <a-entity gltf-model="#model1" animation-mixer position="0 0 0" scale="1 1 1"></a-entity>
     <!-- <a-entity gltf-model="#model1" animation-mixer position="0 0 -2" scale="1 1 1" sound="src: #sound1; autoplay: false; volume: 0.2"></a-entity> -->
     <!-- <a-entity fbx-model="url(Assets/Boy_FBX.fbx)" animation-mixer position="1 0 -2" scale="1 1 1"></a-entity> FBX FORMAT NOT WORKING-->
 
@@ -252,6 +252,10 @@
       animation__position3="property: position; from: 5 10 0; to: -5 10 0; dur: 2000; autoplay: false;">
       <a-camera></a-camera>
     </a-entity> -->
+
+    <a-entity id="cam" position="3 0 12" rotation="0 20 0">
+      <a-camera></a-camera>
+    </a-entity>
 
     <a-entity loadassets></a-entity>
   </a-scene>
